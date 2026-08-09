@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.venv/
+venv/
+env/
+
+# Project runtime
+logs/
+*.log
+tmp_audio/
+knowledge_base/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Local scratch
+test.py

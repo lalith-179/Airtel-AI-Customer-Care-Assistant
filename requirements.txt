@@ -1,0 +1,17 @@
+Flask==3.0.3
+Flask-SocketIO==5.3.6
+python-socketio==5.11.3
+python-engineio==4.9.1
+eventlet==0.36.1
+requests==2.32.3
+chromadb==0.5.5
+langgraph==0.2.28
+langchain-core==0.2.38
+PyMuPDF==1.24.9
+faster-whisper==1.0.3
+piper-tts==1.2.0
+numpy==1.26.4
+python-dotenv==1.0.1
+pydantic==2.8.2
+soundfile==0.12.1
+pydub==0.25.1

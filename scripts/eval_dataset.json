@@ -1,0 +1,37 @@
+[
+  {
+    "id": "eval-1",
+    "question": "How can I recharge my Airtel number?",
+    "expected_intent": "recharge_help",
+    "expected_source": "recharge faq",
+    "expected_escalate": false
+  },
+  {
+    "id": "eval-2",
+    "question": "How can I change my broadband plan?",
+    "expected_intent": "change_plan",
+    "expected_source": "broadband faq",
+    "expected_escalate": false
+  },
+  {
+    "id": "eval-3",
+    "question": "What should I do if my broadband is not working?",
+    "expected_intent": "broadband_down",
+    "expected_source": "broadband faq",
+    "expected_escalate": false
+  },
+  {
+    "id": "eval-4",
+    "question": "Recharge fail \u0c05\u0c2f\u0c3f\u0c02\u0c26\u0c3f, amount deduct \u0c05\u0c2f\u0c3f\u0c02\u0c26\u0c3f. What should I do?",
+    "expected_intent": "recharge_failed",
+    "expected_source": "recharge faq",
+    "expected_escalate": false
+  },
+  {
+    "id": "eval-5",
+    "question": "Can you check my account balance right now?",
+    "expected_intent": "account_check",
+    "expected_source": "",
+    "expected_escalate": true
+  }
+]

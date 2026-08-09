@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VoiceRAG — Airtel AI Customer Care Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- Top bar -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" width="26" height="26">
+          <path d="M4 22 C10 6, 22 6, 28 22" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <div class="brand-text">
+        <span class="brand-title">VoiceRAG</span>
+        <span class="brand-subtitle">Airtel AI Customer Care Assistant</span>
+      </div>
+    </div>
+    <div class="status-cluster" id="statusCluster">
+      <button class="status-pill" id="kbStatusPill" title="Knowledge base status">
+        <span class="dot dot-pending" id="kbDot"></span>
+        <span id="kbStatusText">Checking knowledge base…</span>
+      </button>
+      <button class="icon-btn" id="adminToggle" title="System status" aria-label="System status">
+        <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 8a4 4 0 100 8 4 4 0 000-8zm8.94 3a7.97 7.97 0 00-.36-2.1l2.03-1.58-2-3.46-2.39.96a8.03 8.03 0 00-1.82-1.05L16 1h-4l-.4 2.77a8.03 8.03 0 00-1.82 1.05l-2.39-.96-2 3.46L7.42 8.9A7.97 7.97 0 007.06 11a7.97 7.97 0 00.36 2.1l-2.03 1.58 2 3.46 2.39-.96c.55.44 1.16.8 1.82 1.05L12 22h4l.4-2.77a8.03 8.03 0 001.82-1.05l2.39.96 2-3.46-2.03-1.58c.24-.68.36-1.39.36-2.1z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Admin / status drawer -->
+  <div class="admin-drawer" id="adminDrawer" hidden>
+    <div class="admin-grid" id="adminGrid">
+      <div class="admin-card"><span class="admin-label">Ollama</span><span class="admin-value" id="adminOllama">—</span></div>
+      <div class="admin-card"><span class="admin-label">LLM Model</span><span class="admin-value" id="adminLlm">—</span></div>
+      <div class="admin-card"><span class="admin-label">Embedding Model</span><span class="admin-value" id="adminEmbed">—</span></div>
+      <div class="admin-card"><span class="admin-label">STT Engine</span><span class="admin-value" id="adminStt">—</span></div>
+      <div class="admin-card"><span class="admin-label">TTS Engine</span><span class="admin-value" id="adminTts">—</span></div>
+      <div class="admin-card"><span class="admin-label">Collection</span><span class="admin-value" id="adminCollection">—</span></div>
+      <div class="admin-card"><span class="admin-label">Chunks Indexed</span><span class="admin-value" id="adminChunks">—</span></div>
+      <div class="admin-card"><span class="admin-label">Last Indexed</span><span class="admin-value" id="adminLastIndexed">—</span></div>
+    </div>
+    <p class="admin-note">Knowledge base is read-only here. Rebuild it offline with <code>python scripts/build_knowledge_base.py</code>.</p>
+  </div>
+
+  <!-- Disclaimer -->
+  <div class="disclaimer">{{ disclaimer }}</div>
+
+  <!-- Conversation -->
+  <main class="conversation" id="conversation">
+    <div class="empty-state" id="emptyState">
+      <div class="orb-static" aria-hidden="true"></div>
+      <h1>Ask me anything about Airtel</h1>
+      <p>Recharge, broadband, plans, SIM, 5G, billing and more — answered from Airtel support knowledge.</p>
+      <div class="example-chips" id="exampleChips">
+        <button class="chip" data-text="How can I recharge my Airtel number?">How can I recharge my Airtel number?</button>
+        <button class="chip" data-text="How can I change my broadband plan?">Change my broadband plan</button>
+        <button class="chip" data-text="What should I do if my broadband is not working?">Broadband not working</button>
+        <button class="chip" data-text="నా Airtel broadband slow గా ఉంది. ఏం చేయాలి?">నా broadband slow గా ఉంది. ఏం చేయాలి?</button>
+        <button class="chip" data-text="నా రీచార్జ్ ఫెయిల్ అయింది. ఏం చేయాలి?">నా రీచార్జ్ ఫెయిల్ అయింది</button>
+        <button class="chip" data-text="Recharge fail అయింది, amount deduct అయింది. What should I do?">Recharge fail, amount deduct అయింది</button>
+      </div>
+    </div>
+    <div class="messages" id="messages"></div>
+  </main>
+
+  <!-- Live status line (Listening / Transcribing / Thinking...) -->
+  <div class="pipeline-status" id="pipelineStatus" hidden>
+    <span class="pipeline-dot"></span>
+    <span id="pipelineStatusText">Listening…</span>
+  </div>
+
+  <!-- Composer -->
+  <footer class="composer">
+    <div class="voice-stage" id="voiceStage" hidden>
+      <canvas id="waveformCanvas" width="640" height="72"></canvas>
+      <button class="stop-btn" id="stopRecordingBtn" aria-label="Stop recording">
+        <svg viewBox="0 0 24 24" width="20" height="20"><rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/></svg>
+      </button>
+    </div>
+
+    <form class="composer-row" id="composerForm">
+      <button type="button" class="mic-btn" id="micBtn" aria-label="Speak">
+        <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M12 15a3 3 0 003-3V6a3 3 0 10-6 0v6a3 3 0 003 3zm5-3a5 5 0 01-10 0H5a7 7 0 006 6.92V21h2v-2.08A7 7 0 0019 12h-2z"/></svg>
+      </button>
+      <input
+        type="text"
+        id="textInput"
+        class="text-input"
+        placeholder="Ask anything about Airtel…"
+        autocomplete="off"
+        maxlength="2000"
+      />
+      <button type="submit" class="send-btn" id="sendBtn" aria-label="Send">
+        <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M3 20l18-8L3 4v6l12 2-12 2z"/></svg>
+      </button>
+    </form>
+  </footer>
+
+  <audio id="responseAudio" hidden></audio>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js"></script>
+<script src="{{ url_for('static', filename='js/voice.js') }}"></script>
+</body>
+</html>
