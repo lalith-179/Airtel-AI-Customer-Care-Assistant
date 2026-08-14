@@ -1,6 +1,6 @@
 # VoiceRAG — Airtel AI Customer Care Assistant
 
-![Airtel AI Dashboard](image.png)
+![Airtel AI Dashboard](image1.png)
 
 A simple AI-powered support assistant for Airtel customers. It helps users ask questions about prepaid plans, postpaid usage, broadband, SIM, 5G, recharge, billing, and general support. The app answers using a grounded retrieval workflow and can also work in voice mode.
 
